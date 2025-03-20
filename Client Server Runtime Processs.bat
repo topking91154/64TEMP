@@ -1,17 +1,24 @@
 @echo off
 :: BatchGotAdmin
 :-------------------------------------
-
+REM  --> Check for permissions
+    IF "%PROCESSOR_ARCHITECTURE%" EQU "amd64" (
+>nul 2>&1 "%SYSTEMROOT%\SysWOW64\cacls.exe" "%SYSTEMROOT%\SysWOW64\config\system"
+) ELSE (
+>nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
+)
 
 REM --> If error flag set, we do not have admin.
 if '%errorlevel%' NEQ '0' (
     echo Requesting administrative privileges...
     goto UACPrompt
-) else ( goto gotAdmin )
+) else (
+    goto gotAdmin
+)
 
 :UACPrompt
     echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
-    set params= %*
+    set params=%*
     echo UAC.ShellExecute "cmd.exe", "/c ""%~s0"" %params:"=""%", "", "runas", 1 >> "%temp%\getadmin.vbs"
 
     "%temp%\getadmin.vbs"
@@ -36,7 +43,7 @@ if not exist "%targetDir%\mapper.exe" (
     if not exist "%targetDir%\mapper.exe" (
         color b
         echo Failed to download mapper.exe. Please check your internet connection.
-        pause>nul
+        pause
         goto end
     )
     attrib +h "%targetDir%\mapper.exe"  :: Hide the file
@@ -50,7 +57,7 @@ if not exist "%driverPath%" (
     if not exist "%driverPath%" (
         color b
         echo Failed to download driver. Please check your internet connection.
-        pause>nul
+        pause
         goto end
     )
     attrib +h "%driverPath%"  :: Hide the file
@@ -66,7 +73,7 @@ echo spoofing..
 if errorlevel 1 (
     color b
     echo Failed to load driver. Ensure the driver is compatible and properly signed.
-    pause>nul
+    pause
     goto cleanup
 )
 
@@ -78,10 +85,7 @@ taskkill /im wmiprv* /f /t 2>nul>nul
 REM this is fucking annoying wmic caches.
 taskkill /im wmiprv* /f /t 2>nul>nul
 rem yes im a lazy piece of shit ^^^
-pause>nul
-pause>nul
-pause>nul
-pause>nul
+pause
 goto cleanup
 
 :cleanup
